@@ -68,6 +68,10 @@ def add_option_route(poll_id):
     add_option(poll_id, option)
     return redirect(url_for('poll', poll_id=poll_id))
 
+@app.route('/health')
+def health_check():
+    return "OK", 200
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=False, host='0.0.0.0')
