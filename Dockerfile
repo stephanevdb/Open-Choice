@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 8737
 
-CMD ["python", "serve.py"]
+CMD ["python3", "serve.py"]
