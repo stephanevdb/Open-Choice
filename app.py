@@ -70,4 +70,4 @@ def add_option_route(poll_id):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=False)
+    app.run(debug=False, host='0.0.0.0')
