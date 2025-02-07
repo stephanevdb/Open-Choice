@@ -47,6 +47,7 @@ def poll(poll_id):
     if poll is None:
         return "Error: Poll not found", 404  
     options = get_options(poll_id)
+    options.sort(key=lambda option: option[3], reverse=True)  # Sort options by votes in descending order
     return render_template('poll.html', poll=poll, options=options)
 
 @app.route('/vote/<poll_id>/<option_id>', methods=['POST'])
