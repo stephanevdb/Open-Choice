@@ -50,14 +50,14 @@ python serve.py
 2. Run the Docker container:
 
     ```bash
-    docker run -p 8747:8747 open-choice
+    docker run -p 8737:8737 open-choice
     ```
 
-The application will be accessible at `http://localhost:8747`.
+The application will be accessible at `http://localhost:8737`.
 
 ## Usage
 
-1. Open your web browser and navigate to `http://localhost:8747`.
+1. Open your web browser and navigate to `http://localhost:8737`.
 2. Create a new poll by entering a question and optionally setting a custom ID and expiration date.
 3. Add options to the poll.
 4. Vote on the options.
