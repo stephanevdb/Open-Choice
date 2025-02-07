@@ -1,0 +1,15 @@
+Metadata-Version: 2.2
+Name: Open-Choice
+Version: 1.0.0
+Summary: A web application for creating and managing polls
+Home-page: https://github.com/stephanevdb/Open-Choice
+Author: Stéphane Van den Broeck
+Author-email: mail@stephanevdb.com
+License-File: LICENSE
+Requires-Dist: Flask>=2.0.0
+Requires-Dist: sqlite3
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: summary

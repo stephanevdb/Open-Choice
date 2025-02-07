@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+Open_Choice.egg-info/PKG-INFO
+Open_Choice.egg-info/SOURCES.txt
+Open_Choice.egg-info/dependency_links.txt
+Open_Choice.egg-info/entry_points.txt
+Open_Choice.egg-info/requires.txt
+Open_Choice.egg-info/top_level.txt

@@ -1,0 +1,2 @@
+[console_scripts]
+open-choice = app:main
