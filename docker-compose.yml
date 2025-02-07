@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   open-choice:
     image: stephanevdb/open-choice
@@ -5,9 +7,12 @@ services:
     ports:
       - "8737:8737"
     volumes:
-      - ./open-choice:/app
+      - db_data:/app/database
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8737/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+volumes:
+  db_data:

@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import timedelta, datetime
 
-db_file = 'database.db'
+db_file = 'databse/database.db'
 
 def get_db():
     return sqlite3.connect(db_file)
