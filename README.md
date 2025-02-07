@@ -20,7 +20,7 @@ Open-Choice is a simple poll generator web application built with Flask. Users c
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/Open-Choice.git
+git clone https://github.com/stephanevdb/Open-Choice.git
 cd Open-Choice
 ```
 
@@ -36,7 +36,7 @@ pip install -r requirements.txt
 ### Using Python
 
 ```bash
-python app.py
+python serve.py
 ```
 
 ### Using Docker
@@ -50,14 +50,14 @@ python app.py
 2. Run the Docker container:
 
     ```bash
-    docker run -p 5000:5000 open-choice
+    docker run -p 8747:8747 open-choice
     ```
 
-The application will be accessible at `http://localhost:5000`.
+The application will be accessible at `http://localhost:8747`.
 
 ## Usage
 
-1. Open your web browser and navigate to `http://localhost:5000`.
+1. Open your web browser and navigate to `http://localhost:8747`.
 2. Create a new poll by entering a question and optionally setting a custom ID and expiration date.
 3. Add options to the poll.
 4. Vote on the options.
