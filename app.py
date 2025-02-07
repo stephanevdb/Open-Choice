@@ -39,14 +39,31 @@ def create_poll_route():
     print("debug")
     print(id, question, expiration_date)
     create_poll(id, question, expiration_date)
-    return redirect(url_for(id=id))
+    return redirect(url_for('poll', poll_id=id))
 
 @app.route('/<poll_id>')
 def poll(poll_id):
     polls = get_polls()
-    poll = [poll for poll in polls if poll[0] == poll_id][0]
+    print(polls)
+    poll = next((poll for poll in polls if poll[0] == poll_id), None)
+    print(poll)
+    if poll is None:
+        return "Error: Poll not found", 404  # Return error response if poll not found
     options = get_options(poll_id)
     return render_template('poll.html', poll=poll, options=options)
+
+@app.route('/vote/<poll_id>/<option_id>', methods=['POST'])
+def vote_route(poll_id, option_id):
+    vote(poll_id, option_id)
+    return redirect(url_for('poll', poll_id=poll_id))
+
+@app.route('/add_option/<poll_id>', methods=['POST'])
+def add_option_route(poll_id):
+    option = request.form["option"]
+    if not option:
+        return "Error: Missing option text", 400  # Return error response
+    add_option(poll_id, option)
+    return redirect(url_for('poll', poll_id=poll_id))
 
 if __name__ == '__main__':
     init_db()

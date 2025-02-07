@@ -1,1 +1,30 @@
 <!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ poll[1] }}</title>
+  </head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333;">
+    <header style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; color: white; font-size: 2.5em;">{{ poll[1] }}</h1>
+    </header>
+    <main style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+        <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center;">
+            <h2 style="margin-bottom: 15px; font-size: 1.5em;">Options</h2>
+            <ul style="list-style-type: none; padding: 0;">
+                {% for option in options %}
+                <li style="margin-bottom: 10px;">
+                    <span>{{ option[2] }} - {{ option[3] }} votes</span>
+                    <form action="/vote/{{ poll[0] }}/{{ option[0] }}" method="POST" style="display: inline;">
+                        <button type="submit" style="padding: 5px 10px; font-size: 1em; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Vote</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            <form action="/add_option/{{ poll[0] }}" method="POST" style="margin-top: 20px;">
+                <input id="option" name="option" type="text" placeholder="Enter new option" style="width: 100%; padding: 15px; font-size: 1em; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px;">
+                <button type="submit" style="padding: 15px 30px; font-size: 1em; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Add Option</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
