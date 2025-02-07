@@ -24,6 +24,9 @@
                 <input id="option" name="option" type="text" placeholder="Enter new option" style="width: 100%; padding: 15px; font-size: 1em; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px;">
                 <button type="submit" style="padding: 15px 30px; font-size: 1em; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Add Option</button>
             </form>
+            <p>
+                <a href="#" id="share-link" style="color: #4CAF50; text-decoration: none;">Share this poll</a>
+            </p>
         </div>
     </main>
 
@@ -46,6 +49,16 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+            });
+        });
+
+        document.getElementById('share-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Poll URL copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
             });
         });
     </script>
