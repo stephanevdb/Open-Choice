@@ -2,30 +2,33 @@
 <html>
 <head>
     <title>{{ poll[1] }}</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    <header>
-        <h1>{{ poll[1] }}</h1>
-    </header>
-    <main>
-        <div>
+<body class="has-navbar-fixed-bottom">
+        <div class="container has-text-centered mt-5 mb-5">
+            <h1 class="title is-1">{{ poll[1] }}e</h1>
+        </div>
+    <main class="is-flex is-flex-direction-column is-justify-content-space-between">
+        <div class="box mt-2 m-4">
             <h2>Options</h2>
             <ul>
                 {% for option in options %}
-                <li>
+                <li class="mb-3">
                     <span>{{ option[2] }} - {{ option[3] }} votes</span>
                     <form class="vote-form" action="/vote/{{ poll[0] }}/{{ option[0] }}" method="POST">
-                        <button type="submit">Vote</button>
+                        <button class="button is-primary is-dark is-rounded" type="submit">Vote</button>
                     </form>
                 </li>
                 {% endfor %}
             </ul>
-            <form action="/add_option/{{ poll[0] }}" method="POST">
-                <input id="option" name="option" type="text" placeholder="Enter new option">
-                <button type="submit">Add Option</button>
+            <form action="/add_option/{{ poll[0] }}" method="POST" class="mt-4">
+                <input class="input mb-3" id="option" name="option" type="text" placeholder="Enter new option">
+                <button class="button is-primary is-dark is-rounded" type="submit">Add Option</button>
             </form>
-            <p>
+            <p class="mt-4">
                 <a href="#" id="share-link">Share this poll</a>
             </p>
         </div>
@@ -63,8 +66,13 @@
             });
         });
     </script>
+    <footer class="footer mt-auto">
+        <div class="content has-text-centered">
+            <p>
+                <strong>Open-Choice</strong> by <a href="https://github.com/stephanevdb">Stéphane Van den Broeck</a>.  
+                View the project on <a href="https://github.com/stephanevdb/open-choice">GitHub</a>
+            </p>
+        </div>
+    </footer>
 </body>
-<footer>
-    <p>View the project on <a href="https://github.com/stephanevdb/open-choice">GitHub</a></p>
-</footer>
 </html>

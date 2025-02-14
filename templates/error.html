@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="hero is-danger is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="title">
+                    Oops! Something went wrong.
+                </h1>
+                <h2 class="subtitle">
+                    {{ message }}
+                </h2>
+                <a href="{{ url }}" class="button is-light is-rounded">Go Back</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
