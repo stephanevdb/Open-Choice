@@ -5,35 +5,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .fab {
+            position: fixed;
+            bottom: 100px; /* Position above footer */
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #004d42;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            background-color: #00635a;
+            color: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Pin the footer to the bottom of the viewport */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            padding: 1.5rem 1.5rem;
+            background-color: #1f2229; /* Dark grey background */
+            color: white; /* Light text for dark background */
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Footer link styling */
+        .footer a {
+            color: #9effff; /* Light blue color for links on dark grey */
+            transition: color 0.2s ease;
+        }
+        
+        .footer a:hover {
+            color: white;
+        }
+        
+        .footer strong {
+            color: white; /* Ensure strong text is white */
+        }
+        
+        /* Adjust body padding to account for fixed footer */
+        body {
+            padding-bottom: 120px; /* Increased to account for fixed footer height */
+        }
+        
+        /* Responsive layout adjustments */
+        @media screen and (max-width: 768px) {
+            main {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                min-height: auto !important;
+            }
+            
+            .container.mt-5 {
+                margin-top: 0.5rem !important;
+                margin-bottom: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .title.is-1 {
+                font-size: 1.5rem;
+                margin-bottom: 0;
+                padding: 0.5rem 0 0 0;
+                line-height: 1.2;
+            }
+            
+            .box {
+                margin-top: 0 !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            /* Remove extra padding on mobile */
+            main .box.m-4 {
+                margin: 0.5rem !important;
+                width: calc(100% - 1rem) !important;
+            }
+            
+            /* Title container spacing reduction */
+            #title {
+                padding: 0 !important;
+                min-height: auto !important;
+            }
+        }
+    </style>
 </head>
 <body class="has-navbar-fixed-bottom">
-        <div class="container has-text-centered mt-5 mb-5">
-            <h1 class="title is-1">{{ poll[1] }}e</h1>
-        </div>
-    <main class="is-flex is-flex-direction-column is-justify-content-space-between">
-        <div class="box mt-2 m-4">
-            <h2>Options</h2>
+    <div id="title" class="container has-text-centered mt-5 mb-5">
+        <h1 class="title is-1">{{ poll[1] }}</h1>
+    </div>
+    <main class="is-flex is-flex-direction-column is-justify-content-space-between" style="align-items: center; min-height: 70vh; padding-top: 0;">
+        <div class="box m-4" style="max-width: 800px; width: calc(100% - 40px); margin-left: auto; margin-right: auto; padding-left: 2rem; padding-right: 2rem;">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+                <h2 class="title is-4 mb-0">Options</h2>
+                <a href="#" id="share-link" class="button is-small is-light is-rounded">
+                    <i class="fas fa-share-alt mr-2"></i> Share
+                </a>
+            </div>
+            
             <ul>
                 {% for option in options %}
-                <li class="mb-3">
-                    <span>{{ option[2] }} - {{ option[3] }} votes</span>
-                    <form class="vote-form" action="/vote/{{ poll[0] }}/{{ option[0] }}" method="POST">
-                        <button class="button is-primary is-dark is-rounded" type="submit">Vote</button>
-                    </form>
+                <li class="mb-3 is-flex is-justify-content-space-between is-align-items-center">
+                    <span>{{ option[2] }}</span>
+                    <div class="is-flex is-align-items-center">
+                        <div class="vote-count has-text-centered has-text-white is-size-6" 
+                             style="border-radius: 50%; width: 28px; height: 28px; display: flex; 
+                                    align-items: center; justify-content: center; margin-right: 10px; 
+                                    background-color: #004d42;">
+                            {{ option[3] }}
+                        </div>
+                        <form class="vote-form" action="/vote/{{ poll[0] }}/{{ option[0] }}" method="POST">
+                            <button class="button is-primary is-dark is-rounded" type="submit">Vote</button>
+                        </form>
+                    </div>
                 </li>
                 {% endfor %}
             </ul>
-            <form action="/add_option/{{ poll[0] }}" method="POST" class="mt-4">
-                <input class="input mb-3" id="option" name="option" type="text" placeholder="Enter new option">
-                <button class="button is-primary is-dark is-rounded" type="submit">Add Option</button>
-            </form>
-            <p class="mt-4">
-                <a href="#" id="share-link">Share this poll</a>
-            </p>
+            
+            <div class="mt-5 pt-3" style="border-top: 1px solid #eee;">
+                <form action="/add_option/{{ poll[0] }}" method="POST" class="is-flex is-align-items-center">
+                    <input class="input mr-3" id="option" name="option" type="text" placeholder="Enter new option">
+                    <button class="button is-primary is-dark is-rounded" type="submit">Add Option</button>
+                </form>
+            </div>
         </div>
     </main>
-    <a href="/" class="fab">+</a>
+    <a href="/" class="fab" title="Create new poll">
+        <i class="fas fa-plus"></i>
+    </a>
     <script>
         document.querySelectorAll('.vote-form').forEach(form => {
             form.addEventListener('submit', function(event) {

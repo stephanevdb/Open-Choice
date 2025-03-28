@@ -6,6 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            padding: 1.5rem 1.5rem;
+            background-color: #1f2229; /* Dark grey background */
+            color: white; /* Light text for dark background */
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Footer link styling */
+        .footer a {
+            color: #9effff; /* Light blue color for links on dark grey */
+            transition: color 0.2s ease;
+        }
+        
+        .footer a:hover {
+            color: white;
+        }
+        
+        .footer strong {
+            color: white; /* Ensure strong text is white */
+        }
+        
+        /* Adjust body padding to account for fixed footer */
+        body {
+            padding-bottom: 120px; /* Increased to account for fixed footer height */
+        }
+    </style>
+    
 </head>
 <body class="has-navbar-fixed-bottom">
     <div class="container has-text-centered mt-5 mb-5">
