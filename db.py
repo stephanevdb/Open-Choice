@@ -9,6 +9,23 @@ os.makedirs(os.path.dirname(db_file), exist_ok=True)
 def get_db():
     return sqlite3.connect(db_file)
 
+def remove_poll_with_options(poll_id):
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute('DELETE FROM options WHERE poll_id = ?', (poll_id,))
+        c.execute('DELETE FROM polls WHERE id = ?', (poll_id,))
+        conn.commit()
+
+def remove_expired_polls():
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute('SELECT id FROM polls WHERE expiration_date < ?', (current_date,))
+        expired_polls = c.fetchall()
+        for poll_id in expired_polls:
+            remove_poll_with_options(poll_id[0])
+        conn.commit()
+
 def init_db():
     with get_db() as conn:
         c = conn.cursor()

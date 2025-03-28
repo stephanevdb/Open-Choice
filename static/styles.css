@@ -1,0 +1,19 @@
+.box{
+    --bulma-box-background-color: var(--bulma-background);
+    --bulma-box-shadow: 0;
+    --bulma-box-radius: 2em;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}

@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response
 import sqlite3
-from db import init_db, create_poll, get_polls, get_options, add_option, vote
+from db import init_db, create_poll, get_polls, get_options, add_option, vote, remove_expired_polls
 from datetime import datetime, timedelta
 import random
 import string
+from apscheduler.schedulers.background import BackgroundScheduler
 
 default_expiration_date = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
 
@@ -15,6 +16,10 @@ def generate_random_id():
 @app.route('/')
 def index():
     return render_template('index.html', default_expiration_date = default_expiration_date)
+
+@app.route('/error')
+def error():
+    return render_template('error.html')
 
 @app.route('/create_poll', methods=['POST'])
 def create_poll_route():
@@ -30,10 +35,15 @@ def create_poll_route():
     else:
         id = generate_random_id()
 
+    if not expiration_date:
+        return render_template('error.html', message="Error: Missing expiration date", url="/"), 400
 
-
-    if not question or not expiration_date:
-        return "Error: Missing question or expiration date", 400  
+    if not question:    
+        return render_template('error.html', message="Error: Missing question text", url="/"), 400
+    
+    if expiration_date < datetime.now().strftime('%Y-%m-%d'):
+        return render_template('error.html', message="Error: Expiration date must be in the future", url="/"), 400
+    
 
     create_poll(id, question, expiration_date)
     return redirect(url_for('poll', poll_id=id))
@@ -45,7 +55,14 @@ def poll(poll_id):
     poll = next((poll for poll in polls if poll[0] == poll_id), None)
     print(poll)
     if poll is None:
-        return "Error: Poll not found", 404  
+        return render_template('error.html', message="Error: Poll not found", url="/"), 404
+    # Compare dates without time component
+    expiration_date = datetime.strptime(poll[2], '%Y-%m-%d').date()
+    current_date = datetime.now().date()
+    if expiration_date < current_date:
+        return render_template('error.html', message="Error: Poll expired", url="/"), 400
+    
+    
     options = get_options(poll_id)
     options.sort(key=lambda option: option[3], reverse=True)  # Sort options by votes in descending order
     return render_template('poll.html', poll=poll, options=options)
@@ -53,6 +70,17 @@ def poll(poll_id):
 @app.route('/vote/<poll_id>/<option_id>', methods=['POST'])
 def vote_route(poll_id, option_id):
     vote_cookie = request.cookies.get(f'voted_{poll_id}_{option_id}')
+
+    polls = get_polls()
+    poll = next((poll for poll in polls if poll[0] == poll_id), None)
+    if poll is None:
+        return render_template('error.html', message="Error: Poll not found", url="/"), 404
+    options = get_options(poll_id)
+    option = next((option for option in options if option[0] == int(option_id)), None)
+    if option is None:
+        return render_template('error.html', message="Error: Option not found", url="/"), 404
+
+
     if vote_cookie:
         return jsonify({"message": "You can only vote once per option."}), 400
     
@@ -65,7 +93,7 @@ def vote_route(poll_id, option_id):
 def add_option_route(poll_id):
     option = request.form["option"]
     if not option:
-        return "Error: Missing option text", 400  
+        return render_template('error.html', message="Error: Missing option text", url=f"/{poll_id}"), 400
     add_option(poll_id, option)
     return redirect(url_for('poll', poll_id=poll_id))
 
@@ -73,6 +101,11 @@ def add_option_route(poll_id):
 def health_check():
     return "OK", 200
 
+scheduler = BackgroundScheduler()
+scheduler.add_job(remove_expired_polls, 'interval', days=1)
+scheduler.start()
+
 if __name__ == '__main__':
     init_db()
-    app.run(debug=False, host='0.0.0.0', port=8737)
+    remove_expired_polls()  # Check for expired polls on startup
+    app.run(debug=True, host='0.0.0.0', port=8737)
