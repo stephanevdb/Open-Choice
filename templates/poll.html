@@ -104,6 +104,36 @@
                 min-height: auto !important;
             }
         }
+
+        /* Notification styling */
+        #custom-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 300px;
+            z-index: 2000;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: slide-in 0.4s ease-out;
+        }
+        
+        #custom-notification.is-hidden {
+            opacity: 0;
+            transform: translateX(30px);
+            pointer-events: none;
+        }
+        
+        @keyframes slide-in {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body class="has-navbar-fixed-bottom">
@@ -149,7 +179,47 @@
     <a href="/" class="fab" title="Create new poll">
         <i class="fas fa-plus"></i>
     </a>
+
+    <!-- Custom notification component -->
+    <div id="custom-notification" class="notification is-hidden">
+        <button class="delete" aria-label="close"></button>
+        <p id="notification-message"></p>
+    </div>
+
     <script>
+        // Show custom notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('custom-notification');
+            const messageEl = document.getElementById('notification-message');
+            
+            // Remove any existing notification classes
+            notification.classList.remove('is-success', 'is-warning', 'is-danger', 'is-info');
+            
+            // Add appropriate class based on type
+            notification.classList.add(`is-${type}`);
+            
+            // Set message
+            messageEl.textContent = message;
+            
+            // Show notification
+            notification.classList.remove('is-hidden');
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('is-hidden');
+            }, 3000);
+        }
+
+        // Close notification when close button is clicked
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeBtn = document.querySelector('#custom-notification .delete');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    document.getElementById('custom-notification').classList.add('is-hidden');
+                });
+            }
+        });
+
         document.querySelectorAll('.vote-form').forEach(form => {
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -162,7 +232,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.message === "You can only vote once per option.") {
-                        alert(data.message);
+                        showNotification(data.message, 'warning');
                     } else {
                         window.location.reload();
                     }
@@ -174,12 +244,58 @@
         document.getElementById('share-link').addEventListener('click', function(event) {
             event.preventDefault();
             const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Poll URL copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+            
+            // First attempt: Try modern clipboard API (works in most modern browsers)
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url)
+                    .then(() => {
+                        showNotification('Poll URL copied to clipboard!', 'success');
+                    })
+                    .catch(err => {
+                        console.error('Clipboard API failed:', err);
+                        copyUsingFallback(url);
+                    });
+            } else {
+                // For browsers without clipboard API support (including many Android browsers)
+                copyUsingFallback(url);
+            }
         });
+
+        function copyUsingFallback(text) {
+            // Create textarea element
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            
+            // Make the textarea out of viewport
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-999999px';
+            textarea.style.top = '-999999px';
+            document.body.appendChild(textarea);
+            
+            // For Android, we need to focus and select the text
+            textarea.focus();
+            textarea.select();
+            
+            let succeeded = false;
+            try {
+                // Execute the copy command
+                succeeded = document.execCommand('copy');
+            } catch (err) {
+                console.error('execCommand failed:', err);
+                succeeded = false;
+            }
+            
+            // Clean up
+            document.body.removeChild(textarea);
+            
+            // Notify the user based on the result
+            if (succeeded) {
+                showNotification('Poll URL copied to clipboard!', 'success');
+            } else {
+                // Final fallback: show the URL for manual copying
+                prompt('Copy this link manually (tap and hold to select):', text);
+            }
+        }
     </script>
     <footer class="footer mt-auto">
         <div class="content has-text-centered">
