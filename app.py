@@ -55,7 +55,14 @@ def poll(poll_id):
     poll = next((poll for poll in polls if poll[0] == poll_id), None)
     print(poll)
     if poll is None:
-        return "Error: Poll not found", 404  
+        return render_template('error.html', message="Error: Poll not found", url="/"), 404
+    # Compare dates without time component
+    expiration_date = datetime.strptime(poll[2], '%Y-%m-%d').date()
+    current_date = datetime.now().date()
+    if expiration_date < current_date:
+        return render_template('error.html', message="Error: Poll expired", url="/"), 400
+    
+    
     options = get_options(poll_id)
     options.sort(key=lambda option: option[3], reverse=True)  # Sort options by votes in descending order
     return render_template('poll.html', poll=poll, options=options)
@@ -63,6 +70,17 @@ def poll(poll_id):
 @app.route('/vote/<poll_id>/<option_id>', methods=['POST'])
 def vote_route(poll_id, option_id):
     vote_cookie = request.cookies.get(f'voted_{poll_id}_{option_id}')
+
+    polls = get_polls()
+    poll = next((poll for poll in polls if poll[0] == poll_id), None)
+    if poll is None:
+        return render_template('error.html', message="Error: Poll not found", url="/"), 404
+    options = get_options(poll_id)
+    option = next((option for option in options if option[0] == int(option_id)), None)
+    if option is None:
+        return render_template('error.html', message="Error: Option not found", url="/"), 404
+
+
     if vote_cookie:
         return jsonify({"message": "You can only vote once per option."}), 400
     
